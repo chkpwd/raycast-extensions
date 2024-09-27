@@ -38,3 +38,6 @@ program
       console.error((error as Error).message);
     }
   });
+
+// Parse command line arguments
+program.parse(process.argv);

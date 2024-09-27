@@ -64,11 +64,5 @@ export const listSecrets = () => {
   }
 };
 
-// test function
-export function generateList(): number[] {
-    const list: number[] = [];
-    for (let i = 1; i <= 16; i++) {
-        list.push(i);
-    }
-    return list;
-}
+export { logger };
+export type { SecretsJson };
