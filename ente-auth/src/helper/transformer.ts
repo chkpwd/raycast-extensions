@@ -5,14 +5,14 @@ export const dataTransformer = (
   username: string,
   currentTotp: string,
   currentTotpTimeRemaining: number,
-  nextTotp: string
+  nextTotp: string,
 ): JsonFormat => {
   return {
-    service_name: serviceName,
+    service_name: serviceName.replace(/\+/g, " "),
+    username,
     current_totp: currentTotp,
     current_totp_time_remaining: currentTotpTimeRemaining,
     next_totp: nextTotp,
-    username,
   };
 };
 
