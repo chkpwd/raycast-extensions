@@ -21,10 +21,6 @@ export default function Command() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    console.log(secrets[4]);
-  }, [secrets]);
-
   if (secrets.length === 0) {
     return (
       <List>

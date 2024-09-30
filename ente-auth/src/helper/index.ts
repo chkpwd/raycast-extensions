@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import { logger } from "./logger";
 import * as OTPAuth from "otpauth";
 import { dataTransformer } from "./transformer";
 import { ServiceData as SecretsJson, JsonFormat } from "./types";
@@ -35,7 +34,7 @@ export const listSecretsWithTOTP = (): JsonFormat[] => {
     });
   } catch (err: any) {
     if (err.message.includes("No such file or directory")) {
-      logger.error("Database not found. Please import secrets first.");
+      console.error("Database not found. Please import secrets first.");
       return [];
     }
     console.error("Error reading secrets: ", err);
@@ -44,5 +43,4 @@ export const listSecretsWithTOTP = (): JsonFormat[] => {
   return items;
 };
 
-export { logger };
 export type { SecretsJson };
