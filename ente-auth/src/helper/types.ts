@@ -13,6 +13,7 @@ interface JsonFormat {
   current_totp_time_remaining: number;
   next_totp: string;
   username?: string;
+  icon?: string;
 }
 
 export type { Secret, SecretData as ServiceData, JsonFormat };
