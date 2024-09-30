@@ -38,5 +38,3 @@ export const parseSecrets = (filePath: string = 'secrets.txt'): Secret[] => {
 
   return secretsList;
 }
-
-
