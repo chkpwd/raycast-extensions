@@ -1,11 +1,14 @@
 import * as fs from "fs";
 import * as OTPAuth from "otpauth";
+import { LocalStorage } from "@raycast/api";
 
 export interface Secret {
   issuer: string;
   username: string;
   secret: string;
 }
+
+const STORAGE_KEY = "ente-auth-secrets";
 
 const parseSecretURL = (url: string): Secret => {
   const totp = OTPAuth.URI.parse(url);
@@ -17,12 +20,15 @@ const parseSecretURL = (url: string): Secret => {
   };
 };
 
-export const parseSecrets = (filePath: string = "secrets.txt"): Secret[] => {
+export const getSecrets = (filePath: string = "ente_auth.txt"): string[] => {
+  const data = fs.readFileSync(filePath, "utf8").split("\n");
+  return data;
+};
+
+export const parseSecrets = (rawSecretsURLs: string[]): Secret[] => {
   const secretsList: Secret[] = [];
 
-  const data = fs.readFileSync(filePath, "utf8").split("\n");
-
-  data.forEach((line) => {
+  rawSecretsURLs.forEach((line) => {
     line = line.trim();
 
     if (line) {
@@ -36,3 +42,7 @@ export const parseSecrets = (filePath: string = "secrets.txt"): Secret[] => {
 
   return secretsList;
 };
+
+export const storeSecrets = async (secrets: Secret[]) => {
+  await LocalStorage.setItem(STORAGE_KEY, JSON.stringify(secrets));
+}

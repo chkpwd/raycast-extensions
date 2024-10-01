@@ -12,8 +12,14 @@
   "commands": [
     {
       "name": "index",
-      "title": "Get TOTP Code",
+      "title": "Get TOTP",
       "description": "Search for an Ente Auth account and copy the TOTP code to the clipboard",
+      "mode": "view"
+    },
+    {
+      "name": "database",
+      "title": "Import Secrets",
+      "description": "Import Ente Auth secrets from a JSON file",
       "mode": "view"
     }
   ],
