@@ -84,3 +84,6 @@ compiled_raycast_swift
 # Secret files
 ente_auth.txt
 secrets.txt
+
+# Test files
+test.ts
