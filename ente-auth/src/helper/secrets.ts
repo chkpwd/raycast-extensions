@@ -23,7 +23,7 @@ export const parseSecrets = (filePath: string = "secrets.txt"): Secret[] => {
   const data = fs.readFileSync(filePath, "utf8").split("\n");
 
   data.forEach((line) => {
-    line = line.trim(); // Remove whitespace
+    line = line.trim();
 
     if (line) {
       try {
