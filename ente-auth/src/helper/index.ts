@@ -1,29 +1,31 @@
 import * as OTPAuth from "otpauth";
 import { dataTransformer } from "./transformer";
-import { ServiceData as SecretsJson, JsonFormat } from "./types";
+import { Secret, JsonFormat } from "./types";
 import { LocalStorage } from "@raycast/api";
 import { STORAGE_KEY } from "./secrets";
 
-export const listSecretsWithTOTP = (): JsonFormat[] => {
-  const items: JsonFormat[] = [];
-  const store = LocalStorage.getItem(STORAGE_KEY);
+export const getJsonFormatFromStore = async (): Promise<JsonFormat[]> => {
+  const storageStringRaw = await LocalStorage.getItem<string>(STORAGE_KEY);
+  const data: Secret[] = JSON.parse(storageStringRaw ?? "{}");
+
+  return mapSecretsToJsonFormat(data);
+};
+
+export const mapSecretsToJsonFormat = (items: Secret[]): JsonFormat[] => {
+  const result: JsonFormat[] = [];
 
   try {
-    const data: SecretsJson = JSON.parse(store);
+    items.forEach((item) => {
+      const totp = new OTPAuth.TOTP({ secret: item.secret });
+      const currentTotp = totp.generate();
+      const currentTotpTimeRemaining = totp.period - (Math.floor(Date.now() / 1000) % totp.period);
+      const nextTotp = totp.generate({ timestamp: Date.now() + 30 * 1000 });
 
-    Object.entries(data).forEach(([serviceName, serviceData]) => {
-      serviceData.forEach(({ username, secret }) => {
-        const totp = new OTPAuth.TOTP({ secret });
-        const currentTotp = totp.generate();
-        const currentTotpTimeRemaining = totp.period - (Math.floor(Date.now() / 1000) % totp.period);
-        const nextTotp = totp.generate({ timestamp: Date.now() + 30 * 1000 });
+      const formattedData = dataTransformer(item.issuer, item.username, currentTotp, currentTotpTimeRemaining, nextTotp);
 
-        const formattedData = dataTransformer(serviceName, username, currentTotp, currentTotpTimeRemaining, nextTotp);
-
-        if (formattedData) {
-          items.push(formattedData);
-        }
-      });
+      if (formattedData) {
+        result.push(formattedData);
+      }
     });
   } catch (err: unknown) {
     if (err instanceof Error && err.message.includes("No such file or directory")) {
@@ -33,7 +35,5 @@ export const listSecretsWithTOTP = (): JsonFormat[] => {
     console.error("Error reading secrets: ", err);
   }
 
-  return items;
+  return result;
 };
-
-export type { SecretsJson };

@@ -1,7 +1,4 @@
-interface Secret {
-  username: string;
-  secret: string;
-}
+import { Secret } from './secrets';
 
 interface SecretData {
   [serviceName: string]: Secret[];
@@ -16,4 +13,4 @@ interface JsonFormat {
   icon?: string;
 }
 
-export type { Secret, SecretData as ServiceData, JsonFormat };
+export type { Secret, SecretData, JsonFormat };
