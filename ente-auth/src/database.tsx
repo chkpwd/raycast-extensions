@@ -1,27 +1,12 @@
-import fse from "fs-extra";
-import { homedir } from "os";
-
-import { useExec } from "@raycast/utils";
-import { Form, ActionPanel, Action, popToRoot } from "@raycast/api";
+import { Form, ActionPanel, Action, popToRoot, showToast, Toast } from "@raycast/api";
 import { getSecrets, parseSecrets, storeSecrets } from "./helper/secrets";
-
-const DEFAULT_PATH = `${homedir()}/Documents/ente`;
+import { DEFAULT_PATH, createEntePath, exportEnteAuthSecrets } from "./helper/ente";
 
 interface PathValues {
   path?: string;
 }
 
-const entePath = "/usr/local/bin/ente";
-
 export default function Command() {
-  if (!fse.existsSync(DEFAULT_PATH)) {
-    fse.mkdirSync(DEFAULT_PATH);
-    useExec(entePath, ["export"]);
-  }
-
-  const allSecretsURL = getSecrets(`"${DEFAULT_PATH}/ente_auth.txt"`);
-  const secrets = parseSecrets(allSecretsURL);
-
   return (
     <Form
       enableDrafts
@@ -29,16 +14,24 @@ export default function Command() {
         <ActionPanel>
           <Action.SubmitForm
             onSubmit={(values: PathValues) => {
-              console.log("onSubmit", values);
+              createEntePath(DEFAULT_PATH);
+              exportEnteAuthSecrets();
+              const secrets = parseSecrets(getSecrets(values.path || `"${DEFAULT_PATH}/ente_auth.txt"`));
               storeSecrets(secrets);
-              console.log(secrets);
-              popToRoot();
+
+              if (storeSecrets.length > 0) {
+                showToast({
+                  style: Toast.Style.Success,
+                  title: "Secrets imported",
+                  message: `${values.path} was imported successfully.`,
+                }).then(() => popToRoot());
+              }
             }}
           />
         </ActionPanel>
       }
     >
-      <Form.TextField id="path" title="Path" defaultValue={DEFAULT_PATH} />
+      <Form.TextField id="path" title="Path" defaultValue={`${DEFAULT_PATH}/ente_auth.txt`} />
     </Form>
   );
 }
