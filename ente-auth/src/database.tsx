@@ -1,19 +1,26 @@
+import fse from "fs-extra";
 import { homedir } from "os";
 
+import { useExec } from "@raycast/utils";
 import { Form, ActionPanel, Action, popToRoot } from "@raycast/api";
 import { getSecrets, parseSecrets, storeSecrets } from "./helper/secrets";
 
-const DEFAULT_PATH = `${homedir()}/Documents/ente/ente_auth.txt`;
+const DEFAULT_PATH = `${homedir()}/Documents/ente`;
 
 interface PathValues {
-  path?: Date;
+  path?: string;
 }
 
-export default function Command() {
-  const secretsURL = getSecrets(DEFAULT_PATH);
-  const secrets = parseSecrets(secretsURL);
+const entePath = "/usr/local/bin/ente";
 
-  storeSecrets(secrets);
+export default function Command() {
+  if (!fse.existsSync(DEFAULT_PATH)) {
+    fse.mkdirSync(DEFAULT_PATH);
+    useExec(entePath, ["export"]);
+  }
+
+  const allSecretsURL = getSecrets(`"${DEFAULT_PATH}/ente_auth.txt"`);
+  const secrets = parseSecrets(allSecretsURL);
 
   return (
     <Form
@@ -23,9 +30,9 @@ export default function Command() {
           <Action.SubmitForm
             onSubmit={(values: PathValues) => {
               console.log("onSubmit", values);
-              popToRoot();
               storeSecrets(secrets);
               console.log(secrets);
+              popToRoot();
             }}
           />
         </ActionPanel>

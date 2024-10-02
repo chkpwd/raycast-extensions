@@ -1,16 +1,16 @@
-import * as fs from "fs";
-import * as path from "path";
 import * as OTPAuth from "otpauth";
 import { dataTransformer } from "./transformer";
 import { ServiceData as SecretsJson, JsonFormat } from "./types";
+import { LocalStorage } from "@raycast/api";
 
-export const DB_FILE = path.join(process.env.HOME || "", ".local", "share", "ente-totp", "db.json");
+export const STORAGE_KEY = "ente-auth-secrets";
 
 export const listSecretsWithTOTP = (): JsonFormat[] => {
   const items: JsonFormat[] = [];
+  const store = LocalStorage.getItem(STORAGE_KEY);
 
   try {
-    const data: SecretsJson = JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+    const data: SecretsJson = JSON.parse(store);
 
     Object.entries(data).forEach(([serviceName, serviceData]) => {
       serviceData.forEach(({ username, secret }) => {
