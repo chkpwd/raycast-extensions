@@ -8,7 +8,7 @@ export interface Secret {
   secret: string;
 }
 
-const STORAGE_KEY = "ente-auth-secrets";
+export const STORAGE_KEY = "ente-auth-secrets";
 
 const parseSecretURL = (url: string): Secret => {
   const totp = OTPAuth.URI.parse(url);

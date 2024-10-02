@@ -2,8 +2,7 @@ import * as OTPAuth from "otpauth";
 import { dataTransformer } from "./transformer";
 import { ServiceData as SecretsJson, JsonFormat } from "./types";
 import { LocalStorage } from "@raycast/api";
-
-export const STORAGE_KEY = "ente-auth-secrets";
+import { STORAGE_KEY } from "./secrets";
 
 export const listSecretsWithTOTP = (): JsonFormat[] => {
   const items: JsonFormat[] = [];
