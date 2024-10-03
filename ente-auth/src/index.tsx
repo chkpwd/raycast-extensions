@@ -1,7 +1,8 @@
 import { getProgressIcon } from "@raycast/utils";
 import { ActionPanel, Action, List, Icon } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { listSecretsWithTOTP } from "./helper";
+import { getJsonFormatFromStore } from "./helper";
+import { JsonFormat } from "./helper/types";
 
 // Ente colors - purple #A400B6, orange #FF9800
 const getProgressColor = (remainingTime: number) => {
@@ -11,11 +12,15 @@ const getProgressColor = (remainingTime: number) => {
 const RERENDER_INTERVAL = 1000;
 
 export default function Command() {
-  const [secrets, setSecrets] = useState(listSecretsWithTOTP());
+  const [secrets, setSecrets] = useState<JsonFormat[]>([]);
 
   useEffect(() => {
+    if (secrets.length === 0) {
+      getJsonFormatFromStore().then((data) => setSecrets(data));
+    }
+
     const interval = setInterval(() => {
-      setSecrets(listSecretsWithTOTP());
+      getJsonFormatFromStore().then((data) => setSecrets(data));
     }, RERENDER_INTERVAL);
 
     return () => clearInterval(interval);
