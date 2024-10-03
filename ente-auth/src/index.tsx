@@ -3,7 +3,6 @@ import { ActionPanel, Action, List, Icon } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { getJsonFormatFromStore } from "./helper";
 import { JsonFormat } from "./helper/types";
-import { get } from "http";
 
 // Ente colors - purple #A400B6, orange #FF9800
 const getProgressColor = (remainingTime: number) => {
