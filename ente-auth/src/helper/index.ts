@@ -21,7 +21,18 @@ export const mapSecretsToJsonFormat = (items: Secret[]): JsonFormat[] => {
       const currentTotpTimeRemaining = totp.period - (Math.floor(Date.now() / 1000) % totp.period);
       const nextTotp = totp.generate({ timestamp: Date.now() + 30 * 1000 });
 
-      const formattedData = dataTransformer(item.issuer, item.username, currentTotp, currentTotpTimeRemaining, nextTotp);
+      const formattedData = dataTransformer(
+        item.username,
+        item.issuer,
+        item.algorithm,
+        item.digits,
+        item.period,
+        item.tags,
+        item.notes,
+        currentTotp,
+        currentTotpTimeRemaining,
+        nextTotp,
+      );
 
       if (formattedData) {
         result.push(formattedData);

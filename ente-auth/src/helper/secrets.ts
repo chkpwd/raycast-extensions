@@ -1,28 +1,29 @@
 import fse from "fs-extra";
 import * as OTPAuth from "otpauth";
 import { LocalStorage } from "@raycast/api";
-
-export interface Secret {
-  issuer: string;
-  username: string;
-  secret: string;
-}
+import { Secret } from "./types";
 
 export const STORAGE_KEY = "ente-auth-secrets";
 
 const parseSecretURL = (url: string): Secret => {
   const totp = OTPAuth.URI.parse(url);
+  const getExtraInfo = new URL(url).searchParams;
+  const codeDisplay = getExtraInfo.get("codeDisplay");
 
   return {
-    issuer: totp.issuer,
     username: totp.label,
+    issuer: totp.issuer,
+    algorithm: totp.algorithm,
+    digits: totp.digits,
+    period: getExtraInfo.get("period") ?? "",
+    tags: codeDisplay ? JSON.parse(codeDisplay).tags.map((tag: string) => tag.trim()) : [],
+    notes: codeDisplay ? JSON.parse(codeDisplay).note : "",
     secret: totp.secret.base32,
   };
 };
 
 export const getSecrets = (filePath: string = "ente_auth.txt"): string[] => {
-  const data = fse.readFileSync(filePath, "utf8").split("\n");
-  return data;
+  return fse.readFileSync(filePath, "utf8").split("\n");
 };
 
 export const parseSecrets = (rawSecretsURLs: string[]): Secret[] => {
