@@ -1,4 +1,4 @@
-import { JsonFormat, Secret } from "./types";
+import { JsonFormat, Secret } from "../helper/types";
 
 export const dataTransformer = (
   username: string,

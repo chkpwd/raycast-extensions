@@ -23,6 +23,24 @@
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "name": "cliPath",
+      "type": "textfield",
+      "required": true,
+      "title": "Ente CLI Path",
+      "description": "If you wish to use your own CLI, type here the location of your local installation.",
+      "placeholder": "CLI Path"
+    },
+    {
+      "name": "exportPath",
+      "type": "textfield",
+      "required": false,
+      "title": "Ente CLI Export Location",
+      "description": "If you wish to change the default export path, type here the location of your local installation.",
+      "placeholder": "Export Path"
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.81.2",
     "@raycast/utils": "^1.16.3",

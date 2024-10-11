@@ -1,8 +1,9 @@
-import path from "path";
 import fse from "fs-extra";
 import { execSync } from "child_process";
+import { getPreferenceValues } from "@raycast/api";
+import { DEFAULT_EXPORT_PATH } from "../constants/ente";
 
-export const DEFAULT_PATH = path.join(process.env.HOME || "", "Documents", "ente");
+const DEFAULT_CLI_PATH = getPreferenceValues().cliPath || "/usr/local/bin/ente";
 
 export const createEntePath = (path: string): string => {
   if (!fse.existsSync(path)) {
@@ -13,33 +14,27 @@ export const createEntePath = (path: string): string => {
   return path;
 };
 
-export const checkEnteBinary = (): void => {
+export const checkEnteBinary = (): boolean => {
   try {
-    execSync("ente version");
+    execSync(`${DEFAULT_CLI_PATH} version`);
+    return true;
   } catch (error) {
     console.log("Ente binary not found. Please install it.");
+    return false;
   }
 };
 
 export const exportEnteAuthSecrets = (): void => {
-  checkEnteBinary();
-
-  if (!fse.existsSync(`${DEFAULT_PATH}/ente_auth.txt`)) {
+  if (!fse.existsSync(`${DEFAULT_EXPORT_PATH}/ente_auth.txt`)) {
     console.log("ente_auth.txt not found. Exporting...");
     execSync("ente export");
 
-    if (!fse.existsSync(`${DEFAULT_PATH}/ente_auth.txt`)) {
-      console.log("Export failed.");
-      return;
-    } else {
-      console.log("Export successful.");
+    if (!fse.existsSync(`${DEFAULT_EXPORT_PATH}/ente_auth.txt`)) {
+      throw new Error("Export failed.");
     }
-
-    return;
   } else {
-    console.log("Skipping export...");
+    throw new Error("Skipping export...");
   }
 
-  console.log("Export found.");
-  return;
+  throw new Error("An unknown error occurred.");
 };
