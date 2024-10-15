@@ -24,17 +24,26 @@ export const checkEnteBinary = (): boolean => {
   }
 };
 
-export const exportEnteAuthSecrets = (): void => {
-  if (!fse.existsSync(`${DEFAULT_EXPORT_PATH}/ente_auth.txt`)) {
-    console.log("ente_auth.txt not found. Exporting...");
-    execSync("ente export");
-
+export const exportEnteAuthSecrets = (): boolean => {
+  try {
     if (!fse.existsSync(`${DEFAULT_EXPORT_PATH}/ente_auth.txt`)) {
-      throw new Error("Export failed.");
+      console.log("ente_auth.txt not found. Exporting...");
+      try {
+        execSync("ente export");
+      } catch (error) {
+        throw new Error("Export failed. Please check if the command is correct.");
+      }
+
+      if (!fse.existsSync(`${DEFAULT_EXPORT_PATH}/ente_auth.txt`)) {
+        throw new Error("Export failed. Please check if the command is correct.");
+      }
+    } else {
+      console.log("Skipping export...");
     }
-  } else {
-    throw new Error("Skipping export...");
+  } catch (error) {
+    console.error("Error during export:", error);
+    return false;
   }
 
-  throw new Error("An unknown error occurred.");
+  return true;
 };
