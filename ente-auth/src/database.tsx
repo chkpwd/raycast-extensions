@@ -1,36 +1,44 @@
-import { popToRoot, showToast, Toast, getPreferenceValues, Detail } from "@raycast/api";
-import { getSecrets, parseSecrets, storeSecrets } from "./helper/secrets";
-import { createEntePath, exportEnteAuthSecrets } from "./helper/ente";
+import { showError } from "./components/showError";
 import { DEFAULT_EXPORT_PATH } from "./constants/ente";
+import { getSecrets, parseSecrets, storeSecrets } from "./helpers/secrets";
+import { checkEnteBinary, createEntePath, exportEnteAuthSecrets } from "./helpers/ente";
+import { popToRoot, showToast, Toast, Detail, getPreferenceValues } from "@raycast/api";
 
-export default async function Command() {
-  const line_break = "\n\n";
-  const submit_issue =
-    "https://github.com/raycast/extensions/issues/new?assignees=&labels=extension%2Cbug&template=extension_bug_report.yml&title=%5BEnte%20Auth%5D+...";
-  const ente_cli_installation_url = "https://github.com/ente-io/ente/tree/main/cli#readme";
-  const toast = await showToast(Toast.Style.Animated, "Importing secrets...", "Please wait");
+export default function Command() {
+  const enteBinaryExists = checkEnteBinary();
+  const exportPath = getPreferenceValues().exportPath || `${DEFAULT_EXPORT_PATH}/ente_auth.txt`;
 
-  createEntePath(DEFAULT_EXPORT_PATH);
-  exportEnteAuthSecrets();
-  const secrets = parseSecrets(getSecrets(getPreferenceValues().exportPath || `"${DEFAULT_EXPORT_PATH}/ente_auth.txt"`));
-
-  try {
-    storeSecrets(secrets);
-    toast
-  } catch (error) {
-    toast.style = Toast.Style.Failure;
-    toast.title = "Import failed";
-    toast.message = "Failed to import secrets";
-    return;
+  if (!enteBinaryExists) {
+    return showError();
   }
 
-  storeSecrets(secrets);
+  try {
+    createEntePath(exportPath);
+  } catch (error) {
+    showToast(Toast.Style.Failure, "Folder creation failed");
+    return <Detail markdown={`## Failed to create folder at \`${exportPath}\``} />;
+  }
 
-  if (storeSecrets.length > 0) {
-    showToast({
-      style: Toast.Style.Success,
-      title: "Secrets imported",
-      message: `${getPreferenceValues().cliPath} was imported successfully.`,
-    }).then(() => popToRoot());
+  try {
+    exportEnteAuthSecrets();
+  } catch (error) {
+    showToast(Toast.Style.Failure, "Export failed");
+  }
+
+  try {
+    const secrets = parseSecrets(getSecrets(exportPath));
+    storeSecrets(secrets);
+
+    if (secrets.length > 0) {
+      showToast({
+        style: Toast.Style.Success,
+        title: "Secrets imported",
+        message: `${exportPath}/ente_auth.txt was imported successfully.`,
+      }).then(() => popToRoot());
+    } else {
+      showToast(Toast.Style.Failure, "No secrets found", "Please check your export path");
+    }
+  } catch (error) {
+    showToast(Toast.Style.Failure, "Error importing secrets", "An unexpected error occurred");
   }
 }
