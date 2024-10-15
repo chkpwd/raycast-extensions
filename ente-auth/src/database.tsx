@@ -2,7 +2,7 @@ import { showError } from "./components/showError";
 import { DEFAULT_EXPORT_PATH } from "./constants/ente";
 import { getSecrets, parseSecrets, storeSecrets } from "./helpers/secrets";
 import { checkEnteBinary, createEntePath, exportEnteAuthSecrets } from "./helpers/ente";
-import { popToRoot, showToast, Toast, Detail, getPreferenceValues } from "@raycast/api";
+import { checkEnteBinary, createEntePath, exportEnteAuthSecrets, deleteEnteExport } from "./helpers/ente";
 
 export default function Command() {
   const enteBinaryExists = checkEnteBinary();
@@ -30,6 +30,8 @@ export default function Command() {
     storeSecrets(secrets);
 
     if (secrets.length > 0) {
+      deleteEnteExport();
+
       showToast({
         style: Toast.Style.Success,
         title: "Secrets imported",
