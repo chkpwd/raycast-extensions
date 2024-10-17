@@ -88,7 +88,7 @@ export default function Command() {
             ]}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard title="Copy TOTP" icon={Icon.Clipboard} content={item.current_totp} />
+                <Action.Paste title="Paste TOTP" icon={Icon.Clipboard} content={item.current_totp} />
                 <Action.CopyToClipboard title="Copy Next" icon={Icon.Key} content={item.next_totp} />
               </ActionPanel>
             }
