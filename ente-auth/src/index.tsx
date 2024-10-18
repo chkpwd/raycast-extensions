@@ -66,7 +66,7 @@ export default function Command() {
                       <Label title="Digits" text={item.digits.toString()} />
                       <Label title="Period" text={item.period} />
                       <Separator />
-                      <Label title="Notes" text={item.notes} />
+                      <Metadata.Link title="Notes" target={item.notes} text={item.notes} />
                       <Separator />
                       <List.Item.Detail.Metadata.TagList title="Tags">
                         {item.tags.map((tag, index) => (
