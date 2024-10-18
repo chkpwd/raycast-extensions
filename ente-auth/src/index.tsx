@@ -1,9 +1,9 @@
+import { useEffect, useState } from "react";
+import { JsonFormat } from "./helpers/types";
+import { getJsonFormatFromStore } from "./helpers";
 import { useFrecencySorting } from "@raycast/utils";
 import { getProgressIcon, getFavicon } from "@raycast/utils";
 import { ActionPanel, Action, List, Icon } from "@raycast/api";
-import { useEffect, useState } from "react";
-import { getJsonFormatFromStore } from "./helpers";
-import { JsonFormat } from "./helpers/types";
 
 // Ente colors - purple #A400B6, orange #FF9800
 const getProgressColor = (remainingTime: number) => {
@@ -23,6 +23,10 @@ export default function Command() {
       getJsonFormatFromStore().then((data) => setSecrets(data));
     }
 
+    /**
+     * Set up an interval to re-fetch the data from the store every second.
+     * This is necessary because the data in the store can change at any time.
+     */
     const interval = setInterval(() => {
       getJsonFormatFromStore().then((data) => setSecrets(data));
     }, RERENDER_INTERVAL);
@@ -36,7 +40,7 @@ export default function Command() {
   if (secrets.length === 0) {
     return (
       <List>
-        <List.Item title={"🔐 No Secrets found"} />
+        <List.Item title={"No Secrets found"} />
       </List>
     );
   }
