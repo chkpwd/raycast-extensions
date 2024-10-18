@@ -32,8 +32,7 @@ export default function Command() {
   if (secrets.length === 0) {
     return (
       <List>
-        {/* TODO: Update MSG */}
-        <List.Item title={"No Secrets found"} />
+        <List.Item title={"🔐 No Secrets found"} />
       </List>
     );
   }
