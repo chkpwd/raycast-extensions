@@ -33,9 +33,7 @@ export default function Command() {
     <Detail
       isLoading={!secrets || secrets.length === 0}
       markdown={
-        `### ${secrets.length} secrets exported from \`${EXPORTPATH}\`\n` +
-        `\n**Secrets:**\n` +
-        `${secretsList}`
+        `### ${secrets.length} secrets exported from \`${EXPORTPATH}\`\n` + `\n**Secrets:**\n` + `${secretsList}`
       }
     />
   );
