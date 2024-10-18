@@ -1,3 +1,4 @@
+import { useFrecencySorting } from "@raycast/utils";
 import { getProgressIcon, getFavicon } from "@raycast/utils";
 import { ActionPanel, Action, List, Icon } from "@raycast/api";
 import { useEffect, useState } from "react";
@@ -13,6 +14,9 @@ const RERENDER_INTERVAL = 1000;
 
 export default function Command() {
   const [secrets, setSecrets] = useState<JsonFormat[]>([]);
+  const { visitItem, resetRanking } = useFrecencySorting<JsonFormat>(secrets, {
+    key: (item) => item.service_name,
+  });
 
   useEffect(() => {
     if (secrets.length === 0) {
@@ -87,8 +91,32 @@ export default function Command() {
             ]}
             actions={
               <ActionPanel>
-                <Action.Paste title="Paste TOTP" icon={Icon.Clipboard} content={item.current_totp} />
-                <Action.CopyToClipboard title="Copy Next" icon={Icon.Key} content={item.next_totp} />
+                <ActionPanel.Section title="Current">
+                  <Action.Paste
+                    title="Paste TOTP"
+                    icon={Icon.Clipboard}
+                    content={item.current_totp}
+                    onPaste={() => visitItem(item)}
+                  />
+                  <Action.CopyToClipboard
+                    title="Copy Current"
+                    icon={Icon.Key}
+                    content={item.current_totp}
+                    onCopy={() => visitItem(item)}
+                  />
+                </ActionPanel.Section>
+                <ActionPanel.Section title="Next">
+                  <Action.CopyToClipboard
+                    title="Copy Next"
+                    icon={Icon.Key}
+                    content={item.next_totp}
+                    onCopy={() => visitItem(item)}
+                    shortcut={{ modifiers: ["cmd"], key: "n" }}
+                  />
+                </ActionPanel.Section>
+                <ActionPanel.Section>
+                  <Action title="Reset Ranking" icon={Icon.ArrowCounterClockwise} onAction={() => resetRanking(item)} />
+                </ActionPanel.Section>
               </ActionPanel>
             }
           />
